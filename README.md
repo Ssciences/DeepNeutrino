@@ -1,2 +1,2 @@
 # DeepNeutrino
-Software for deep learning and neutrino experiment
+Software for Deep Learning and neutrino experiment
