@@ -61,7 +61,7 @@ def maxpoolmod(im, h, w):
     return reduced_im ,count
 
 def reducir(number_of_files=int(10)): #izquierda sin defoult derecha con.
-
+    #### imput is the number of files to consider
 
     for i in range(0,number_of_files):
 
@@ -82,7 +82,7 @@ def reducir(number_of_files=int(10)): #izquierda sin defoult derecha con.
             todo=ADC[i].reshape((w,h))
             v1=todo[0:279,:]
             v[:,:,i] = maxpool(v1,newsize,newsize)
-
+    #### output is the rediced images as a numpy array
     return v
 
 ##########I/O############
