@@ -62,28 +62,39 @@ def maxpoolmod(im, h, w):
 
 def reducir(number_of_files=int(10)): #izquierda sin defoult derecha con.
     #### imput is the number of files to consider
+    ###initialize
+	newsize = 279
+	v = np.zeros((newsize,newsize,100*number_of_files))
 
-    for i in range(0,number_of_files):
+	for i in range(0,number_of_files):
 
-        file = uproot.open("{}-RecoFull-Parser.root".format(i))
-        tree=file["analysistree"]["anatree"] 
-        ADC = tree.array( b'RecoWaveform_ADC')
-        NChannel=tree.array(b'RecoWaveforms_NumberOfChannels')
-        Nticks=tree.array(b'RecoWaveform_NumberOfTicksInAllChannels')
-        NTracks=tree.array(b'NumberOfTracks')
-        w , h = int(NChannel[0]) , int(Nticks[0]/NChannel[0])
+		print("reducing file{} ".format(i))
+
+		file = uproot.open("{}-RecoFull-Parser.root".format(i))
+		tree = file["analysistree"]["anatree"] 
+		ADC = tree.array( b'RecoWaveform_ADC')
+		NChannel = tree.array(b'RecoWaveforms_NumberOfChannels')
+		Nticks = tree.array(b'RecoWaveform_NumberOfTicksInAllChannels')
+		NTracks = tree.array(b'NumberOfTracks')
+		
         #print(w,h)
 
         ###here a loop over files
-        newsize=279
-        v=np.zeros((newsize,newsize,100*number_of_files))
-        vred=v
-        for i in range(0,100*number_of_files):
-            todo=ADC[i].reshape((w,h))
-            v1=todo[0:279,:]
-            v[:,:,i] = maxpool(v1,newsize,newsize)
-    #### output is the rediced images as a numpy array
-    return v
+		
+		
+      
+         
+		for j in range(0,100):
+			w , h = int(NChannel[j]) , int(Nticks[j]/NChannel[j])
+			if ADC[j].shape[0] == w*h:
+				todo = ADC[j].reshape((w,h))
+				v1 = todo[0:279,:]
+				v[:,:,100*i+j] = maxpool(v1,newsize,newsize)
+			
+			## The future algorithm will include v2 as well. 
+				
+    #### outputs are the reduced images as a numpy array
+	return v
 
 ##########I/O############
 def guardar(v,filename):
@@ -120,3 +131,9 @@ def abrir(file,dim):
     im=tree.array(b'im')
     im=im.reshape(dim)
     return im
+
+def dibujar(event,im):
+    fig = plt.figure(frameon = False)
+    plt.imshow(im[:,:,event].T,cmap = 'jet',interpolation='none')
+    fig.set_size_inches(5, 5) ##grey scale
+
