@@ -2,7 +2,7 @@
 import uproot
 import numpy as np
 import matplotlib.pyplot as plt
-from ROOT import TFile, TTree
+## from ROOT import TFile, TTree # use for saving funcion only
 ########functions to decrese the number of pixel of our detector images#######################
 
 
