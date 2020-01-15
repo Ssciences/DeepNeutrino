@@ -14,7 +14,7 @@ read particle;
 echo the particle is ${particle}.root
  
 
-number_of_files=`ls -l *.root | wc`;
+number_of_files=`ls  *.root | wc -l`;
 echo there are $number_of_files ROOT files
 x=0 # initialize file number
 y=1 # counter
