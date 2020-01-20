@@ -100,7 +100,10 @@ def reducir(number_of_files=int(10)): #izquierda sin defoult derecha con.
 def guardar(v,filename):
     ##########description#########
     # this function stores the np vector 'v' into a 'root file'. Due to memory reasons, the other options are not
-    # as good as root files.
+    # as good as root files. 
+    
+    ###### note ########
+    #### it may be worth trying hdf5 files #########
     
     ###FUNCTION####
     ######dependences#####
