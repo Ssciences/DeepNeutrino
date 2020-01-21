@@ -2,7 +2,7 @@
 import uproot
 import numpy as np
 import matplotlib.pyplot as plt
-## from ROOT import TFile, TTree # use for saving funcion only
+from ROOT import TFile, TTree # use for saving funcion only
 ########functions to decrese the number of pixel of our detector images#######################
 
 
@@ -60,7 +60,87 @@ def maxpoolmod(im, h, w):
                 count=count+1     
     return reduced_im ,count
 
-def reducir(number_of_files=int(10)): #izquierda sin defoult derecha con.
+def reducir(number_of_files=int(10), particle='electron'): #izquierda sin defoult derecha con.
+    #### imput is the number of files to consider
+    
+    #### useful variables #####
+    EventsPerFile=int(500)
+    NChannel = int(1280)
+    Nticks = int(1667)
+    w , h = NChannel , Nticks
+    newsize = 319
+    v = np.zeros((newsize,newsize,EventsPerFile*number_of_files))
+    ## the program ###
+    
+    for i in range(0,number_of_files): ### i stands for the file_number
+        # load the file
+        ## select particle type
+        if particle == 'electron':
+            file = uproot.open("/scratch/deandres/MC/Electrons/reco/Electron_reco_{}.root".format(i))
+            tree = file["analysistree"]["anatree"] 
+            ADC = tree['RecoWaveform_ADC']
+            
+        if particle == 'muon':
+            file = uproot.open("/scratch/deandres/MC/Muons/reco/Muon_reco_{}.root".format(i))
+            tree = file["analysistree"]["anatree"] 
+            ADC = tree['RecoWaveform_ADC']
+        
+        
+        
+        
+        for j in range(0,EventsPerFile): ## loop over events
+            basketcache={} # reset the memory 
+            lazy=ADC.lazyarray(basketcache=basketcache) # now the memory used is in the variable basketcach
+            todo=lazy[j].reshape((w,h))
+            v1=todo[0:newsize,:] #### For now, we want only the first view
+            #v = maxpool(v1,newsize,newsize)
+            v[:,:,EventsPerFile*i+j] = maxpool(v1,newsize,newsize)
+            print( 'este es el cache:', basketcache.keys())
+            print('reducing event number {} out of {}'.format(EventsPerFile*i+j,EventsPerFile*number_of_files))
+    #### output is the rediced images as a numpy array
+    return v
+
+def reducirone(file_number=int(1), particle='electron'): #izquierda sin defoult derecha con.
+    #### imput is the number of files to consider
+    
+    #### useful variables #####
+    EventsPerFile=int(500)
+    NChannel = int(1280)
+    Nticks = int(1667)
+    w , h = NChannel , Nticks
+    newsize = 319
+    v = np.zeros((newsize,newsize,EventsPerFile))
+    ## the program ###
+    
+
+        # load the file
+        ## select particle type
+    if particle == 'electron':
+        file = uproot.open("/scratch/deandres/MC/Electrons/reco/Electron_reco_{}.root".format(file_number))
+        tree = file["analysistree"]["anatree"] 
+        ADC = tree['RecoWaveform_ADC']
+            
+    if particle == 'muon':
+        file = uproot.open("/scratch/deandres/MC/Muons/reco/Muon_reco_{}.root".format(file_number))
+        tree = file["analysistree"]["anatree"] 
+        ADC = tree['RecoWaveform_ADC']
+        
+        
+        
+        
+    for j in range(0,EventsPerFile): ## loop over events
+        basketcache={} # reset the memory 
+        lazy=ADC.lazyarray(basketcache=basketcache) # now the memory used is in the variable basketcach
+        todo=lazy[j].reshape((w,h))
+        v1=todo[0:newsize,:] #### For now, we want only the first view
+        #v = maxpool(v1,newsize,newsize)
+        v[:,:,j] = maxpool(v1,newsize,newsize)
+        #print( 'este es el cache:', basketcache.keys())
+        #print('reducing event number {} out of {}'.format(j,EventsPerFile))
+    #### output is the rediced images as a numpy array
+    return v
+
+def reduciroriginal(number_of_files=int(10)): #izquierda sin defoult derecha con.
     #### imput is the number of files to consider
     ###initialize
 	newsize = 279
@@ -139,4 +219,13 @@ def dibujar(event,im):
     fig = plt.figure(frameon = False)
     plt.imshow(im[:,:,event].T,cmap = 'jet',interpolation='none')
     fig.set_size_inches(5, 5) ##grey scale
-
+    fig.show()
+    
+def reducir_guardar(number_of_files=1, particle='electron'):
+    for i in range(number_of_files):
+        print('file = {}'.format(i+1))
+        v = reducirone(i, particle)
+        if i<10:
+            guardar(v,"r{}_0{}.root".format(particle,i))
+        else: 
+            guardar(v,"r{}_{}.root".format(particle,i))
