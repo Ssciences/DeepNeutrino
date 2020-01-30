@@ -2,7 +2,7 @@
 import uproot
 import numpy as np
 import matplotlib.pyplot as plt
-from ROOT import TFile, TTree # use for saving funcion only
+#from ROOT import TFile, TTree # use for saving funcion only
 ########functions to decrese the number of pixel of our detector images#######################
 
 
@@ -230,9 +230,10 @@ def reducir_guardar(number_of_files=1, particle='electron'):
         else: 
             guardar(v,"r{}_{}.root".format(particle,i))
 def display(Event = 0,save = False):
-    
+    w=1280
+    h=1667
     ### Open Wave form file
-    file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/raw/try.root") ### you may have to change the path as you wish
+    file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/raw/raw.root") ### you may have to change the path as you wish
     tree=file["analysistree"]["anatree"] 
     ADC=tree['RawWaveform_ADC'] # define the object ADC from the tree
     basketcache={}
@@ -264,7 +265,7 @@ def display(Event = 0,save = False):
     z=[]
     theta=[]
     phi=[]
-    file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/gen/try.root")
+    file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/gen/gen.root")
     tree = file["analysistree"]["anatree"]
     En = np.append(En,tree.array(b'MCTruth_Generator_StartEnergy').flatten())
     x = np.append(x,tree.array(b'MCTruth_Generator_StartPoint_X').flatten())
@@ -287,3 +288,6 @@ def display(Event = 0,save = False):
     print("-"*40)
     print('theta0 = ',round(theta[Event],2))
     print('phi0 = ',round(phi[Event],2))
+    
+    ## return the two images as numpy arrays
+    return v1, v2 
