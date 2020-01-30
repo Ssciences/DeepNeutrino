@@ -229,3 +229,61 @@ def reducir_guardar(number_of_files=1, particle='electron'):
             guardar(v,"r{}_0{}.root".format(particle,i))
         else: 
             guardar(v,"r{}_{}.root".format(particle,i))
+def display(Event = 0,save = False):
+    
+    ### Open Wave form file
+    file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/raw/try.root") ### you may have to change the path as you wish
+    tree=file["analysistree"]["anatree"] 
+    ADC=tree['RawWaveform_ADC'] # define the object ADC from the tree
+    basketcache={}
+    lazy=ADC.lazyarray(basketcache=basketcache)
+    im=lazy[Event].reshape((w,h))
+    v1=im[0:320,:]
+    v2=im[320:,:]
+    fig = plt.figure()
+    plt.imshow(v1.T,cmap = 'jet', interpolation='none')
+    fig.set_size_inches(10, 10)
+    plt.ylabel("Ticks, drift time ")
+    plt.xlabel("channel View1")
+    plt.show()
+    if save:
+        plt.save("view1.png")
+        
+    plt.imshow(v2.T,cmap = 'jet', interpolation='none') ##grey scale
+    fig.set_size_inches(10, 10)
+    plt.ylabel("Ticks, drift time ")
+    plt.xlabel("channel View2")
+    plt.show()
+    if save:
+        plt.save("view2.png")
+    
+    ### open paraneters file. 
+    En=[]
+    x=[]
+    y=[]
+    z=[]
+    theta=[]
+    phi=[]
+    file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/gen/try.root")
+    tree = file["analysistree"]["anatree"]
+    En = np.append(En,tree.array(b'MCTruth_Generator_StartEnergy').flatten())
+    x = np.append(x,tree.array(b'MCTruth_Generator_StartPoint_X').flatten())
+    y = np.append(y,tree.array(b'MCTruth_Generator_StartPoint_Y').flatten())
+    z = np.append(z,tree.array(b'MCTruth_Generator_StartPoint_Z').flatten())
+    theta = np.append(theta,tree.array(b'MCTruth_Generator_StartDirection_Theta').flatten())
+    phi = np.append(phi,tree.array(b'MCTruth_Generator_StartDirection_Phi').flatten())
+
+    
+    
+    
+    
+    
+    print("The event is generated according to the following parameters")
+    print("E = ",round(En[Event],2), 'GeV')
+    print("-"*40)
+    print('x0 = ',round(x[Event],2))
+    print('y0 = ',round(y[Event],2))
+    print('z0 = ',round(z[Event],2))
+    print("-"*40)
+    print('theta0 = ',round(theta[Event],2))
+    print('phi0 = ',round(phi[Event],2))
