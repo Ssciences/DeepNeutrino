@@ -2,7 +2,7 @@
 import uproot
 import numpy as np
 import matplotlib.pyplot as plt
-#from ROOT import TFile, TTree # use for saving funcion only
+from ROOT import TFile, TTree # use for saving funcion only
 ########functions to decrese the number of pixel of our detector images#######################
 
 
@@ -104,11 +104,11 @@ def reducirone(file_number=int(1), particle='electron'): #izquierda sin defoult 
     #### imput is the number of files to consider
     
     #### useful variables #####
-    EventsPerFile=int(500)
+    EventsPerFile=int(50)
     NChannel = int(1280)
     Nticks = int(1667)
     w , h = NChannel , Nticks
-    newsize = 319
+    newsize = 100
     v = np.zeros((newsize,newsize,EventsPerFile))
     ## the program ###
     
@@ -116,14 +116,14 @@ def reducirone(file_number=int(1), particle='electron'): #izquierda sin defoult 
         # load the file
         ## select particle type
     if particle == 'electron':
-        file = uproot.open("/scratch/deandres/MC/Electrons/reco/Electron_reco_{}.root".format(file_number))
+        file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Electrons/raw/Electron_raw_{}.root".format(file_number))
         tree = file["analysistree"]["anatree"] 
-        ADC = tree['RecoWaveform_ADC']
+        ADC = tree['RawWaveform_ADC']
             
     if particle == 'muon':
         file = uproot.open("/scratch/deandres/MC/Muons/reco/Muon_reco_{}.root".format(file_number))
         tree = file["analysistree"]["anatree"] 
-        ADC = tree['RecoWaveform_ADC']
+        ADC = tree['RawWaveform_ADC']
         
         
         
@@ -132,9 +132,9 @@ def reducirone(file_number=int(1), particle='electron'): #izquierda sin defoult 
         basketcache={} # reset the memory 
         lazy=ADC.lazyarray(basketcache=basketcache) # now the memory used is in the variable basketcach
         todo=lazy[j].reshape((w,h))
-        v1=todo[0:newsize,:] #### For now, we want only the first view
+        v2=todo[319:,:] #### For now, we want only the first view
         #v = maxpool(v1,newsize,newsize)
-        v[:,:,j] = maxpool(v1,newsize,newsize)
+        v[:,:,j] = maxpool(v2,newsize,newsize)
         #print( 'este es el cache:', basketcache.keys())
         #print('reducing event number {} out of {}'.format(j,EventsPerFile))
     #### output is the rediced images as a numpy array
@@ -229,6 +229,7 @@ def reducir_guardar(number_of_files=1, particle='electron'):
             guardar(v,"r{}_0{}.root".format(particle,i))
         else: 
             guardar(v,"r{}_{}.root".format(particle,i))
+            
 def display(Event = 0,save = False):
     w=1280
     h=1667
