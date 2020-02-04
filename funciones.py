@@ -104,7 +104,7 @@ def reducirone(file_number=int(1), particle='electron'): #izquierda sin defoult 
     #### imput is the number of files to consider
     
     #### useful variables #####
-    EventsPerFile=int(50)
+    EventsPerFile=int(250)
     NChannel = int(1280)
     Nticks = int(1667)
     w , h = NChannel , Nticks
@@ -121,7 +121,7 @@ def reducirone(file_number=int(1), particle='electron'): #izquierda sin defoult 
         ADC = tree['RawWaveform_ADC']
             
     if particle == 'muon':
-        file = uproot.open("/scratch/deandres/MC/Muons/reco/Muon_reco_{}.root".format(file_number))
+        file = uproot.open("/scratch/deandres/MC/alongZ_2_3GeV/Muons/raw/Muon_raw_{}.root".format(file_number))
         tree = file["analysistree"]["anatree"] 
         ADC = tree['RawWaveform_ADC']
         
